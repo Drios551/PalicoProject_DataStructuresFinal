@@ -65,7 +65,7 @@ async def on_message(message):
       update_game_list(game_List)
       await message.channel.send('Game has been added to list')
 
-  #for some reason it doesnt let me delete the games off the list
+  #for some reason it doesnt let me delete the games off the list will work on a fix
     if message.content.startswith('$del'):
       games = []
       if "games" in db.keys():
