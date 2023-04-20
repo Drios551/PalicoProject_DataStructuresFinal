@@ -48,48 +48,75 @@ async def on_message(message):
       print('%.2f' % total, 'Seconds')
 
     if message.content.startswith("$help"):
-        await message.channel.send('To add a game to the list just say, $add followed by the name of the game you want to add. To delete a game off the list, just type $del followed by the number of the positon of the game in the list starting at 0')
+      start = time.time()
+      await message.channel.send('To add a game to the list just say, $add followed by the name of the game you want to add. To delete a game off the list, just type $del followed by the name of the game in the list')
+      end = time.time()
+      total = end - start
+      print('%.2f' % total, 'Seconds')
 
     if message.content.startswith('$progress'):
-        await message.channel.send('I am fully working!')
+      start = time.time()
+      await message.channel.send('I am fully working!')
+      end = time.time()
+      total = end - start
+      print('%.2f' % total, 'Seconds')
 
     if message.content.startswith('palico tell me a joke'):
-        await message.channel.send('Here is a joke from where I come from. What do you call a hunting squad full of hunting horns? An orcestra. XD')
-
+      start = time.time()
+      await message.channel.send('Here is a joke from where I come from. What do you call a hunting squad full of hunting horns? An orcestra. XD')
+      end = time.time()
+      total = end - start
+      print('%.2f' % total, 'Seconds')
+      
     if message.content.startswith('random number'):
-        await message.channel.send(random.choice(test_List))
+      start = time.time()
+      await message.channel.send(random.choice(test_List))
+      end = time.time()
+      total = end - start
+      print('%.2f' % total, 'Seconds')
 
     options = troll_List
     if "games" in db.keys():
       options = options + list(db["games"])
 
     if message.content.startswith('palico tell me what to play'):
+      start = time.time()
       await message.channel.send(random.choice(options))
+      end = time.time()
+      total = end - start
+      print('%.2f' % total, 'Seconds')
       
     if message.content.startswith('$add'):
+      start = time.time()
       game_List = message.content.split('$add')[1].strip().upper()
       update_game_list(game_List)
       await message.channel.send('Game has been added to list')
+      end = time.time()
+      total = end - start
+      print('%.2f' % total, 'Seconds')
 
-  #for some reason it doesnt let me delete the games off the list will work on a fix
     if message.content.startswith('$del'):
+      start = time.time()
       games = []
       if "games" in db.keys():
-        print(db['games'])
-        # index = message.content.split('$del')[1]
         game = str(message.content).split('$del')[1].strip().upper()
-        print(game)
         index = db['games'].index(game)
-        print(f'Game found on location: {index}')
         delete_game_list(int(index))
         index = db["games"]
-      await message.channel.send(games)
+      await message.channel.send('Game has been deleted')
+      end = time.time()
+      total = end - start
+      print('%.2f' % total, 'Seconds')
 
     if message.content.startswith('$game list'):
-      rain_fall = 'Game list in order:\n'
+      start = time.time()
+      listOrder = 'Game list in order:\n'
       for game in db['games']:
-        listOrder = rain_fall + f'{db["games"].index(game)}: {game}\n'
+        listOrder = listOrder + f'{db["games"].index(game)}: {game}\n'
       await message.channel.send(listOrder)
+      end = time.time()
+      total = end - start
+      print('%.2f' % total, 'Seconds')
 
 
 
