@@ -1,6 +1,7 @@
 import discord
 import os
 import random
+import time
 from replit import db
 
 intents = discord.Intents.default()
@@ -23,7 +24,8 @@ def update_game_list(game_List):
 
 def delete_game_list(index):
   games = db["games"]
-  index = int(float(index))
+  print(games)
+  index = int(index)
   if len(games) > index:
     del games[index]
     db["games"] = games
@@ -39,7 +41,11 @@ async def on_message(message):
         return
   
     if message.content.startswith('$hello'):
-        await message.channel.send('Hello!')
+      start = time.time()
+      await message.channel.send('Hello!')
+      end = time.time()
+      total = end - start
+      print('%.2f' % total, 'Seconds')
 
     if message.content.startswith("$help"):
         await message.channel.send('To add a game to the list just say, $add followed by the name of the game you want to add. To delete a game off the list, just type $del followed by the number of the positon of the game in the list starting at 0')
@@ -61,7 +67,7 @@ async def on_message(message):
       await message.channel.send(random.choice(options))
       
     if message.content.startswith('$add'):
-      game_List = message.content.split('$add ',1)[1]
+      game_List = message.content.split('$add')[1].strip().upper()
       update_game_list(game_List)
       await message.channel.send('Game has been added to list')
 
@@ -69,13 +75,21 @@ async def on_message(message):
     if message.content.startswith('$del'):
       games = []
       if "games" in db.keys():
-        index = message.content.split('$del', 1)[1]
-        delete_game_list(index)
+        print(db['games'])
+        # index = message.content.split('$del')[1]
+        game = str(message.content).split('$del')[1].strip().upper()
+        print(game)
+        index = db['games'].index(game)
+        print(f'Game found on location: {index}')
+        delete_game_list(int(index))
         index = db["games"]
       await message.channel.send(games)
 
     if message.content.startswith('$game list'):
-      await message.channel.send(options)
+      rain_fall = 'Game list in order:\n'
+      for game in db['games']:
+        listOrder = rain_fall + f'{db["games"].index(game)}: {game}\n'
+      await message.channel.send(listOrder)
 
 
 
