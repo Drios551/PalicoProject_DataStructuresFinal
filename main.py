@@ -2,6 +2,8 @@ import discord
 import os
 import random
 import time
+import csv
+import pandas
 from replit import db
 
 intents = discord.Intents.default()
@@ -9,9 +11,15 @@ intents.message_content = True
 
 client = discord.Client(intents=intents)
 
-
 test_List = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"]
 troll_List = ["Why don't you play with some friends"]
+
+csv = pandas.read_csv('GameItems.csv')
+items = {'name': [], 'descriptions': []}
+
+for index, item in csv.iterrows():
+  items['name'].append(str(item[13]).lower())
+  items['descriptions'].append(str(item[14]).lower())
 
 def update_game_list(game_List):
   if "games" in db.keys():
@@ -20,7 +28,6 @@ def update_game_list(game_List):
     db["games"] = games
   else:
     db["games"] = [game_List]
-
 
 def delete_game_list(index):
   games = db["games"]
@@ -34,12 +41,11 @@ def delete_game_list(index):
 async def on_ready():
     print('We have sucessfully logged in as {0.user}'.format(client))
 
-
 @client.event
 async def on_message(message):
     if message.author == client.user:
         return
-  
+      
     if message.content.startswith('$hello'):
       start = time.time()
       await message.channel.send('Hello!')
@@ -118,16 +124,24 @@ async def on_message(message):
       total = end - start
       print('%.2f' % total, 'Seconds')
 
+    if message.content.startswith('$item info'):
+      start = time.time()
+      UserInput = message.content.split('$item info')[1].strip()
+      try:
+        index = items['name'].index(str(UserInput).lower())
+        await message.channel.send(items['descriptions'] [index])
+      except:
+        suggest = f'Sorry I do not recognize "{UserInput}". Did you mean to say any of the following?'
+        row = 0
+        for item in items['name']:
+          if str(UserInput).lower() in str(item).lower():
+            row += 1
+            suggest += f'\n{row}) {item}'
+        await message.channel.send(suggest)
+      end = time.time()
+      total = end - start
+      print('%2f' % total, 'Seconds')
 
-
-
-      
-      
-        
-
-        
-                                   
-      
 my_secret = os.environ['token']      
 client.run(os.getenv("token"))
 
