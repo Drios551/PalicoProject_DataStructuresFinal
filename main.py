@@ -21,6 +21,10 @@ for index, item in csv.iterrows():
   items['name'].append(str(item[13]).lower())
   items['descriptions'].append(str(item[14]).lower())
 
+
+
+
+
 def update_game_list(game_List):
   if "games" in db.keys():
     games = db["games"]
@@ -141,6 +145,85 @@ async def on_message(message):
       end = time.time()
       total = end - start
       print('%2f' % total, 'Seconds')
+
+    if message.content.startswith('$monster info '):
+
+      csv2 = pandas.read_csv('MonsterInfo.csv')
+      monsters = {
+          'mname': [], 'weakness': [], 'resistance':[]
+        }
+      
+      def element_status(order):
+        if order == 0:
+          return 'Fire'
+        elif order == 1:
+          return 'Water'
+        elif order == 2:
+          return 'Thunder'
+        elif order == 3:
+          return 'Ice'
+        elif order == 4:
+          return 'Dragon'
+        elif order == 5:
+          return 'Poison'
+        elif order == 6:
+          return 'Sleep'
+        elif order == 7:
+          return 'Paralysis'
+        elif order == 8:
+          return 'Blast'
+        elif order == 9:
+          return 'Stun'
+      
+      for index, row in csv2.iterrows():
+        
+        name =row[0]
+        form = row[2]
+        fire = row[3]
+        water = row[4]
+        thunder = row[5]
+        ice = row[6]
+        dragon = row[7]
+        poison = row[8]
+        sleep = row[9]
+        paralysis = row[10]
+        blast = row[11]
+        stun = row[12]
+        mlist = 0
+      
+      elements = [fire, water, thunder, ice, dragon, poison, sleep, paralysis, blast, stun]
+      
+      if len(str(form)) > 3:
+        mweak = f'Weak to "{form}":\n'
+        mresistance = f'Resistant against "{form}":\n'
+      else:
+        mweak = f'Weak to:\n'
+        mresistance = f'Resistant to:\n'
+      for element in elements:
+        try:
+          if int(element) < 2:
+            mresistance += f'- {element_status(mlist)}\n'
+          elif int(element) >= 2:
+            mweak += f'- {element_status(mlist)}\n'
+          mlist += 1
+        except:
+          mlist += 1
+      monsters['mname'].append(str(name).lower())
+      monsters['resistance'].append(mresistance)
+      monsters['weakness'].append(mweak)
+
+      
+      print(monsters['mname'])
+      UserInput2 = message.content.split('$monster info')[1].strip().lower()
+      
+
+      for name in monsters['mname']:
+        if UserInput2 == name:
+          await message.channel.send(monsters['mname']['weakness'][mlist])
+          mlist += 1
+      else:
+        await message.channel.send("monster not found")
+          
 
 my_secret = os.environ['token']      
 client.run(os.getenv("token"))
